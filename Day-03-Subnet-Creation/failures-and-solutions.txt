@@ -1,0 +1,328 @@
+AWS Cloud Lab - Day 03
+Task: Create a subnet named "datacenter-subnet" under the default VPC
+
+========================================================
+Overview
+========================================================
+
+The objective of this task was to create a new subnet inside the
+default VPC in the AWS us-east-1 region.
+
+During the process, several challenges occurred while identifying
+the correct VPC, selecting a valid CIDR block, and verifying the
+created subnet.
+
+This document explains the errors faced, the reasons behind them,
+and the solutions applied.
+
+
+========================================================
+Challenge 1: Verifying AWS CLI Authentication
+========================================================
+
+Problem:
+
+Before creating AWS resources, it was necessary to check whether
+the AWS CLI was properly connected to the AWS account.
+
+If AWS CLI is not authenticated, commands related to EC2, VPC,
+and subnet creation will fail.
+
+
+Command Used:
+
+aws sts get-caller-identity
+
+
+Solution:
+
+The command was used to verify the current AWS account identity.
+
+The output confirmed that:
+
+- AWS account was correct.
+- IAM user was correctly configured.
+- AWS CLI authentication was successful.
+
+
+Result:
+
+AWS CLI was ready to manage AWS resources.
+
+
+========================================================
+Challenge 2: Confirming the AWS Region
+========================================================
+
+Problem:
+
+The task required creating resources only in the
+us-east-1 region.
+
+Creating resources in another region could cause the task
+validation to fail.
+
+
+Command Used:
+
+aws configure get region
+
+
+Solution:
+
+Checked the configured AWS CLI region.
+
+Output:
+
+us-east-1
+
+
+Result:
+
+Confirmed that all AWS operations would be performed in
+the required region.
+
+
+========================================================
+Challenge 3: Finding the Default VPC
+========================================================
+
+Problem:
+
+The task required creating the subnet inside the default VPC.
+However, the VPC ID was not known initially.
+
+AWS requires the VPC ID when creating a subnet.
+
+
+Command Used:
+
+aws ec2 describe-vpcs --filters Name=isDefault,Values=true
+
+
+Solution:
+
+The command was used to find the default VPC details.
+
+The default VPC ID was identified as:
+
+vpc-0b1c5fecb91cba1b7
+
+
+Result:
+
+The correct VPC was found and used for subnet creation.
+
+
+========================================================
+Challenge 4: CIDR Block Conflict While Creating Subnet
+========================================================
+
+Problem:
+
+The first subnet creation attempt used the CIDR block:
+
+172.31.10.0/24
+
+
+Command:
+
+aws ec2 create-subnet \
+--vpc-id vpc-0b1c5fecb91cba1b7 \
+--cidr-block 172.31.10.0/24 \
+--availability-zone us-east-1a
+
+
+Error Received:
+
+InvalidSubnet.Conflict:
+The CIDR '172.31.10.0/24' conflicts with another subnet
+
+
+Reason:
+
+AWS does not allow overlapping CIDR blocks inside the same VPC.
+
+The selected CIDR range was already included inside an existing
+subnet range:
+
+172.31.0.0/20
+
+
+Solution:
+
+Checked all existing subnet CIDR blocks using:
+
+
+aws ec2 describe-subnets \
+--filters Name=vpc-id,Values=vpc-0b1c5fecb91cba1b7
+
+
+After checking existing ranges, a new CIDR block was selected.
+
+
+========================================================
+Challenge 5: CIDR Conflict During Second Attempt
+========================================================
+
+Problem:
+
+A second attempt was made using:
+
+172.31.96.0/20
+
+
+Command:
+
+aws ec2 create-subnet \
+--vpc-id vpc-0b1c5fecb91cba1b7 \
+--cidr-block 172.31.96.0/20 \
+--availability-zone us-east-1a
+
+
+Error Received:
+
+InvalidSubnet.Conflict:
+The CIDR '172.31.96.0/20' conflicts with another subnet
+
+
+Reason:
+
+The subnet creation had actually completed successfully,
+but the terminal process was interrupted using Ctrl+C before
+the output was displayed.
+
+Therefore, the subnet already existed in AWS.
+
+
+Solution:
+
+The existing subnet list was checked again:
+
+aws ec2 describe-subnets \
+--filters Name=vpc-id,Values=vpc-0b1c5fecb91cba1b7 \
+--query "Subnets[*].CidrBlock"
+
+
+The output showed:
+
+172.31.96.0/20
+
+
+This confirmed that the subnet was already created.
+
+
+========================================================
+Challenge 6: Finding the Created Subnet ID
+========================================================
+
+Problem:
+
+To rename the subnet, the subnet ID was required.
+
+The subnet ID was not visible because the first creation output
+was interrupted.
+
+
+Solution:
+
+Used the following command:
+
+
+aws ec2 describe-subnets \
+--filters Name=vpc-id,Values=vpc-0b1c5fecb91cba1b7 \
+--query "Subnets[?CidrBlock=='172.31.96.0/20'].SubnetId"
+
+
+Retrieved subnet ID:
+
+subnet-0ffadbdbd1a81951e
+
+
+Result:
+
+The subnet ID was identified successfully.
+
+
+========================================================
+Challenge 7: Adding the Required Subnet Name
+========================================================
+
+Problem:
+
+The task required the subnet name to be:
+
+datacenter-subnet
+
+
+AWS subnet names are created using tags, not directly during
+subnet creation.
+
+
+Solution:
+
+Added a Name tag:
+
+
+aws ec2 create-tags \
+--resources subnet-0ffadbdbd1a81951e \
+--tags Key=Name,Value=datacenter-subnet
+
+
+Result:
+
+The subnet was successfully named:
+
+datacenter-subnet
+
+
+========================================================
+Final Result
+========================================================
+
+Successfully completed the AWS subnet creation task.
+
+Created Resource:
+
+Type:
+Subnet
+
+Name:
+datacenter-subnet
+
+VPC:
+Default VPC
+
+VPC ID:
+vpc-0b1c5fecb91cba1b7
+
+CIDR Block:
+172.31.96.0/20
+
+Region:
+us-east-1
+
+Subnet ID:
+subnet-0ffadbdbd1a81951e
+
+
+========================================================
+Key Learnings
+========================================================
+
+1. Always verify AWS CLI authentication before managing resources.
+
+2. AWS resources are region-specific, so the correct region must
+   always be selected.
+
+3. A subnet CIDR block cannot overlap with existing subnet ranges
+   inside the same VPC.
+
+4. If a command is interrupted, always verify whether AWS already
+   created the resource before trying again.
+
+5. AWS CLI provides powerful commands to create, configure, and
+   verify cloud infrastructure.
+
+6. Proper troubleshooting and verification are important skills
+   in DevOps and cloud engineering.
