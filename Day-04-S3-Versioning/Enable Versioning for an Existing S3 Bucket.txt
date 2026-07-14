@@ -1,0 +1,372 @@
+AWS Cloud Lab - Day 04
+Task: Enable Versioning for an Existing S3 Bucket
+
+========================================================
+Task Explanation
+========================================================
+
+The objective of this task was to enable versioning for an
+existing Amazon S3 bucket.
+
+S3 Versioning is a data protection feature that keeps multiple
+versions of the same object stored in an S3 bucket.
+
+When versioning is enabled:
+
+- If a file is accidentally deleted, the previous version can
+  be recovered.
+- If a file is overwritten, older versions are still available.
+- It helps protect important data from accidental changes or
+  deletion.
+- It improves data recovery capabilities in cloud environments.
+
+
+The S3 bucket provided for this task was:
+
+Bucket Name:
+
+datacenter-s3-18214
+
+
+Required Action:
+
+Enable versioning for the bucket.
+
+
+AWS Region:
+
+us-east-1
+
+
+========================================================
+Steps Followed
+========================================================
+
+
+Step 1: Verify AWS CLI Authentication
+
+Command Used:
+
+aws sts get-caller-identity
+
+
+Purpose:
+
+This command checks whether the AWS CLI is connected to the
+correct AWS account and IAM user.
+
+Result:
+
+AWS CLI authentication was successfully verified.
+
+
+========================================================
+
+
+Step 2: Verify AWS Region
+
+Command Used:
+
+aws configure get region
+
+
+Purpose:
+
+The task required creating and modifying resources only in the
+us-east-1 region.
+
+Result:
+
+Confirmed that the AWS CLI region was:
+
+us-east-1
+
+
+========================================================
+
+
+Step 3: Check the Existing S3 Bucket
+
+Command Used:
+
+aws s3 ls
+
+
+Purpose:
+
+To verify that the required S3 bucket already existed.
+
+Bucket Found:
+
+datacenter-s3-18214
+
+
+Result:
+
+The existing S3 bucket was identified successfully.
+
+
+========================================================
+
+
+Step 4: Check Current Bucket Versioning Status
+
+Command Used:
+
+aws s3api get-bucket-versioning \
+--bucket datacenter-s3-18214
+
+
+Purpose:
+
+Before enabling versioning, the current versioning status was
+checked.
+
+Possible Outputs:
+
+{}
+
+or
+
+Status: Suspended
+
+
+This means versioning was not enabled.
+
+
+========================================================
+
+
+Step 5: Enable S3 Bucket Versioning
+
+Command Used:
+
+aws s3api put-bucket-versioning \
+--bucket datacenter-s3-18214 \
+--versioning-configuration Status=Enabled
+
+
+Purpose:
+
+This command enables versioning on the S3 bucket.
+
+
+Result:
+
+Bucket versioning was successfully enabled.
+
+
+========================================================
+
+
+Step 6: Verify Versioning Status
+
+Command Used:
+
+aws s3api get-bucket-versioning \
+--bucket datacenter-s3-18214
+
+
+Expected Output:
+
+{
+    "Status": "Enabled"
+}
+
+
+Result:
+
+S3 versioning was confirmed as enabled.
+
+
+========================================================
+Challenges Faced and Solutions
+========================================================
+
+
+Challenge 1: Understanding the Requirement
+
+Problem:
+
+Initially, the task requirement was not clear because it did not
+require creating a new S3 bucket.
+
+Solution:
+
+Analyzed the task carefully and identified that the bucket
+already existed.
+
+The only required action was enabling versioning on:
+
+datacenter-s3-18214
+
+
+Learning:
+
+Always read the task requirement carefully before creating new
+AWS resources.
+
+
+========================================================
+
+
+Challenge 2: Verifying AWS Credentials
+
+Problem:
+
+Before using AWS CLI commands, it was necessary to confirm that
+the AWS environment was correctly authenticated.
+
+Solution:
+
+Used:
+
+aws sts get-caller-identity
+
+
+This confirmed:
+
+- Correct AWS account
+- Correct IAM user
+- Valid AWS CLI session
+
+
+Learning:
+
+Always verify authentication before performing cloud operations.
+
+
+========================================================
+
+
+Challenge 3: Checking the Correct AWS Region
+
+Problem:
+
+AWS resources are region-specific. Performing operations in the
+wrong region can cause the task validation to fail.
+
+Solution:
+
+Checked the configured region:
+
+aws configure get region
+
+
+Confirmed:
+
+us-east-1
+
+
+Learning:
+
+Always verify the AWS region before managing resources.
+
+
+========================================================
+
+
+Challenge 4: Checking Whether Versioning Was Already Enabled
+
+Problem:
+
+Before enabling versioning, it was necessary to know the current
+bucket status.
+
+Solution:
+
+Used:
+
+aws s3api get-bucket-versioning \
+--bucket datacenter-s3-18214
+
+
+This helped identify whether versioning needed to be enabled.
+
+
+Learning:
+
+Always check the current state of cloud resources before making
+changes.
+
+
+========================================================
+
+
+Challenge 5: Verifying the Final Configuration
+
+Problem:
+
+After running the enable command, it was important to confirm
+that the change was applied successfully.
+
+Solution:
+
+Checked the bucket status again using:
+
+aws s3api get-bucket-versioning \
+--bucket datacenter-s3-18214
+
+
+Confirmed:
+
+Status: Enabled
+
+
+Learning:
+
+Verification is an important DevOps practice after every
+infrastructure change.
+
+
+========================================================
+Final Result
+========================================================
+
+
+Successfully completed AWS Day 04 task.
+
+
+Resource:
+
+Amazon S3 Bucket
+
+
+Bucket Name:
+
+datacenter-s3-18214
+
+
+Configuration Changed:
+
+S3 Versioning Enabled
+
+
+Region:
+
+us-east-1
+
+
+Status:
+
+Completed Successfully
+
+
+========================================================
+Key Learnings
+========================================================
+
+
+1. Amazon S3 Versioning helps protect data from accidental
+   deletion and modification.
+
+2. AWS CLI can be used to manage S3 configurations efficiently.
+
+3. Always verify authentication and region before performing
+   AWS operations.
+
+4. Always check existing resource configurations before making
+   changes.
+
+5. Verification after configuration changes is an important
+   DevOps practice.
