@@ -1,0 +1,406 @@
+AWS Cloud Lab - Day 05
+Task: Create an EBS Volume with Specific Requirements
+
+========================================================
+Task Explanation
+========================================================
+
+The objective of this task was to create an Amazon EBS
+(Elastic Block Store) volume in AWS.
+
+The Nautilus DevOps team is gradually migrating infrastructure
+to AWS cloud. As part of this migration process, storage
+resources need to be prepared.
+
+This task required creating an EBS volume with specific
+configurations.
+
+
+Required Configuration:
+
+Volume Name:
+nautilus-volume
+
+
+Volume Type:
+gp3
+
+
+Volume Size:
+2 GiB
+
+
+AWS Region:
+us-east-1
+
+
+========================================================
+What is an EBS Volume?
+========================================================
+
+Amazon Elastic Block Store (EBS) is a block storage service
+provided by AWS.
+
+It works like a virtual hard drive that can be attached to
+EC2 instances.
+
+EBS volumes are commonly used for:
+
+- Operating system storage
+- Application data storage
+- Database storage
+- Backup and recovery purposes
+
+
+========================================================
+Steps Followed
+========================================================
+
+
+Step 1: Verify AWS CLI Authentication
+
+Command Used:
+
+aws sts get-caller-identity
+
+
+Purpose:
+
+Before creating AWS resources, authentication was verified to
+ensure that the AWS CLI was connected to the correct AWS
+account.
+
+
+Result:
+
+AWS CLI authentication was successful.
+
+
+Account:
+
+936335590072
+
+
+IAM User:
+
+kk_labs_user_334067
+
+
+
+========================================================
+
+
+Step 2: Verify AWS Region
+
+Command Used:
+
+aws configure get region
+
+
+Purpose:
+
+The task required creating resources only in the
+us-east-1 region.
+
+
+Result:
+
+Confirmed AWS region:
+
+us-east-1
+
+
+
+========================================================
+
+
+Step 3: Create the EBS Volume
+
+Command Used:
+
+aws ec2 create-volume \
+--volume-type gp3 \
+--size 2 \
+--availability-zone us-east-1a
+
+
+Explanation:
+
+--volume-type gp3
+    Creates a General Purpose SSD (gp3) volume.
+
+--size 2
+    Creates a volume with 2 GiB storage capacity.
+
+--availability-zone us-east-1a
+    Places the volume in the selected AWS Availability Zone.
+
+
+Result:
+
+The EBS volume was created successfully.
+
+
+Volume ID:
+
+vol-0a2688b250fc2d7c4
+
+
+Volume Type:
+
+gp3
+
+
+Size:
+
+2 GiB
+
+
+
+========================================================
+
+
+Step 4: Add Name Tag to the Volume
+
+Problem:
+
+The volume was created successfully, but AWS resources do not
+automatically have names.
+
+The task required the volume name to be:
+
+nautilus-volume
+
+
+Solution:
+
+AWS uses tags to assign names to resources.
+
+
+Command Used:
+
+aws ec2 create-tags \
+--resources vol-0a2688b250fc2d7c4 \
+--tags Key=Name,Value=nautilus-volume
+
+
+
+Result:
+
+The required name tag was added successfully.
+
+
+
+========================================================
+
+
+Step 5: Verify the Volume Configuration
+
+Command Used:
+
+aws ec2 describe-volumes \
+--filters Name=tag:Name,Values=nautilus-volume
+
+
+Purpose:
+
+To confirm that the created volume has the correct:
+
+- Name
+- Size
+- Volume type
+- Availability Zone
+
+
+Expected Result:
+
+Volume Name:
+nautilus-volume
+
+Volume Type:
+gp3
+
+Size:
+2 GiB
+
+
+========================================================
+Challenges Faced and Solutions
+========================================================
+
+
+Challenge 1: Understanding the Task Requirement
+
+Problem:
+
+The task description contained a large migration scenario,
+which made it unclear what actual AWS action was required.
+
+
+Solution:
+
+Analyzed the requirements and identified the important points:
+
+- Create an EBS volume.
+- Use gp3 volume type.
+- Use 2 GiB size.
+- Assign the name nautilus-volume.
+
+
+Learning:
+
+Always identify the actual technical requirement from a
+large task description.
+
+
+
+========================================================
+
+
+Challenge 2: Verifying AWS Credentials
+
+Problem:
+
+Before creating resources, it was necessary to confirm that
+the AWS CLI session was connected correctly.
+
+
+Solution:
+
+Used:
+
+aws sts get-caller-identity
+
+
+This confirmed:
+
+- Correct AWS account
+- Correct IAM user
+- Valid AWS CLI access
+
+
+Learning:
+
+Always verify authentication before managing cloud resources.
+
+
+
+========================================================
+
+
+Challenge 3: Choosing the Availability Zone
+
+Problem:
+
+EBS volumes require an Availability Zone during creation.
+
+The correct Availability Zone was not provided directly.
+
+
+Solution:
+
+Checked available Availability Zones and selected:
+
+us-east-1a
+
+
+Learning:
+
+AWS resources are created inside specific regions and
+availability zones.
+
+
+
+========================================================
+
+
+Challenge 4: Understanding AWS Resource Naming
+
+Problem:
+
+The create-volume command did not include a name parameter.
+
+The created volume initially had no name.
+
+
+Solution:
+
+Used AWS tags to assign the required name:
+
+Key:
+Name
+
+Value:
+nautilus-volume
+
+
+Learning:
+
+AWS commonly uses tags for identifying and organizing
+resources.
+
+
+
+========================================================
+
+
+Final Result
+========================================================
+
+Successfully completed AWS Day 05 task.
+
+
+Created Resource:
+
+Amazon EBS Volume
+
+
+Volume Name:
+
+nautilus-volume
+
+
+Volume ID:
+
+vol-0a2688b250fc2d7c4
+
+
+Volume Type:
+
+gp3
+
+
+Size:
+
+2 GiB
+
+
+Region:
+
+us-east-1
+
+
+Status:
+
+Completed Successfully
+
+
+
+========================================================
+Key Learnings
+========================================================
+
+1. Amazon EBS provides persistent block storage for AWS
+   workloads.
+
+2. gp3 is a modern General Purpose SSD volume type.
+
+3. AWS CLI can be used to create and manage infrastructure.
+
+4. AWS resources can be organized using tags.
+
+5. Verification after creating resources is an important
+   DevOps practice.
+
+6. Understanding regions and availability zones is essential
+   when working with AWS infrastructure.
